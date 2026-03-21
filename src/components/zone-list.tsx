@@ -9,6 +9,7 @@ interface ZoneListProps {
   onPinClick?: (tz: string) => void
   pinnedDate?: Date | null
   sourceZone?: string | null
+  selectedDate?: Date
 }
 
 export function ZoneList({
@@ -18,8 +19,9 @@ export function ZoneList({
   onPinClick,
   pinnedDate,
   sourceZone,
+  selectedDate,
 }: ZoneListProps) {
-  const now = useClock()
+  const now = useClock(selectedDate)
 
   return (
     <div className="w-full max-w-2xl mx-auto">

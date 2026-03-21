@@ -54,6 +54,7 @@ test('Esc closes the palette without side effects', async ({ page }) => {
 test('abbreviation search works (PT → Los Angeles)', async ({ page }) => {
   await page.goto('/')
   await page.keyboard.press('Meta+k')
+  await expect(page.locator('[data-testid="command-input"]')).toBeVisible()
   await page.locator('[data-testid="command-input"]').fill('PT')
   const results = page.locator('[data-testid="command-result"]')
   await expect(results.first()).toBeVisible()

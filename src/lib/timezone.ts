@@ -144,6 +144,47 @@ export function getDayOffset(
   return 0
 }
 
+/** Add (or subtract) days from a date */
+export function addDays(date: Date, days: number): Date {
+  const result = new Date(date)
+  result.setDate(result.getDate() + days)
+  return result
+}
+
+/** Check if two dates are the same calendar day */
+export function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
+}
+
+/** Check if a date is today */
+export function isToday(date: Date): boolean {
+  return isSameDay(date, new Date())
+}
+
+/** Format a date for display in the date nav header */
+export function formatNavDate(date: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
+}
+
+/**
+ * Replace the date portion of `base` with `selectedDate` while keeping
+ * the time-of-day from `base`. Used to shift live clocks to a different day.
+ */
+export function withDate(base: Date, selectedDate: Date): Date {
+  const result = new Date(base)
+  result.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
+  return result
+}
+
 function getDayOfYear(date: Date, timeZone: string): number {
   const parts = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',

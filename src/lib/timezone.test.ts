@@ -7,6 +7,9 @@ import {
   createPinnedDate,
   getDayOffset,
   formatTime,
+  addDays,
+  isSameDay,
+  isToday,
   MAX_ZONES,
 } from './timezone'
 
@@ -95,5 +98,58 @@ describe('getDayOffset', () => {
     // 01:00 UTC = previous day in Honolulu (UTC-10 = 15:00 previous day)
     const date = new Date('2026-03-22T01:00:00Z')
     expect(getDayOffset(date, 'UTC', 'Pacific/Honolulu')).toBe(-1)
+  })
+})
+
+describe('addDays', () => {
+  it('adds days correctly', () => {
+    const date = new Date('2026-03-22T12:00:00Z')
+    const result = addDays(date, 1)
+    expect(result.getDate()).toBe(23)
+  })
+
+  it('subtracts days correctly', () => {
+    const date = new Date('2026-03-22T12:00:00Z')
+    const result = addDays(date, -1)
+    expect(result.getDate()).toBe(21)
+  })
+
+  it('handles month boundaries', () => {
+    const date = new Date('2026-01-31T12:00:00Z')
+    const result = addDays(date, 1)
+    expect(result.getMonth()).toBe(1) // February
+    expect(result.getDate()).toBe(1)
+  })
+
+  it('handles year boundaries', () => {
+    const date = new Date('2025-12-31T12:00:00Z')
+    const result = addDays(date, 1)
+    expect(result.getFullYear()).toBe(2026)
+    expect(result.getMonth()).toBe(0)
+    expect(result.getDate()).toBe(1)
+  })
+})
+
+describe('isSameDay', () => {
+  it('returns true for same local day', () => {
+    const a = new Date(2026, 2, 22, 10, 0, 0)
+    const b = new Date(2026, 2, 22, 23, 0, 0)
+    expect(isSameDay(a, b)).toBe(true)
+  })
+
+  it('returns false for different days', () => {
+    const a = new Date(2026, 2, 22, 10, 0, 0)
+    const b = new Date(2026, 2, 23, 10, 0, 0)
+    expect(isSameDay(a, b)).toBe(false)
+  })
+})
+
+describe('isToday', () => {
+  it('returns true for today', () => {
+    expect(isToday(new Date())).toBe(true)
+  })
+
+  it('returns false for yesterday', () => {
+    expect(isToday(addDays(new Date(), -1))).toBe(false)
   })
 })
