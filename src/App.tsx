@@ -6,6 +6,7 @@ import { PinBanner } from '@/components/pin-banner'
 import { TimePickerDialog } from '@/components/time-picker-dialog'
 import { DateNav } from '@/components/date-nav'
 import { OverlapPanel } from '@/components/overlap-panel'
+import { InstallBanner } from '@/components/install-banner'
 import { useZones } from '@/hooks/use-zones'
 import { usePin } from '@/hooks/use-pin'
 import { useSelectedDate } from '@/hooks/use-selected-date'
@@ -68,6 +69,7 @@ function App() {
         </div>
         <CommandPalette onAdd={addZone} />
         <Toaster />
+      <InstallBanner />
       </div>
       {pickerZone && (
         <TimePickerDialog
