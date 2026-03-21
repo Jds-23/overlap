@@ -5,6 +5,7 @@ import { CommandPalette } from '@/components/command-palette'
 import { PinBanner } from '@/components/pin-banner'
 import { TimePickerDialog } from '@/components/time-picker-dialog'
 import { DateNav } from '@/components/date-nav'
+import { OverlapPanel } from '@/components/overlap-panel'
 import { useZones } from '@/hooks/use-zones'
 import { usePin } from '@/hooks/use-pin'
 import { useSelectedDate } from '@/hooks/use-selected-date'
@@ -56,6 +57,11 @@ function App() {
           pinnedDate={pinnedDate}
           sourceZone={sourceZone}
           selectedDate={selectedDate}
+        />
+        <OverlapPanel
+          zones={zones}
+          homeZone={homeZone}
+          date={selectedDate}
         />
         <div className="mt-4 text-xs text-muted-foreground">
           Press <kbd className="px-1.5 py-0.5 bg-secondary rounded text-foreground font-mono text-xs">⌘K</kbd> to add a zone
