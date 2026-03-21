@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { X, Pin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   formatTime,
@@ -6,6 +6,7 @@ import {
   getUtcOffset,
   getCityName,
   getZoneStatus,
+  getDayOffset,
 } from '@/lib/timezone'
 
 interface ZoneRowProps {
@@ -13,6 +14,9 @@ interface ZoneRowProps {
   isHome: boolean
   now: Date
   onRemove: (tz: string) => void
+  onPinClick?: (tz: string) => void
+  pinnedDate?: Date | null
+  sourceZone?: string | null
 }
 
 const statusColors: Record<string, string> = {
@@ -21,8 +25,25 @@ const statusColors: Record<string, string> = {
   'overlap window': 'text-yellow-400',
 }
 
-export function ZoneRow({ timeZone, isHome, now, onRemove }: ZoneRowProps) {
-  const status = getZoneStatus(timeZone, now)
+const dayLabel: Record<number, string> = {
+  1: '+1d',
+  [-1]: '-1d',
+}
+
+export function ZoneRow({
+  timeZone,
+  isHome,
+  now,
+  onRemove,
+  onPinClick,
+  pinnedDate,
+  sourceZone,
+}: ZoneRowProps) {
+  const displayDate = pinnedDate ?? now
+  const status = getZoneStatus(timeZone, displayDate)
+  const dayOffset = pinnedDate && sourceZone
+    ? getDayOffset(pinnedDate, sourceZone, timeZone)
+    : 0
 
   return (
     <div
@@ -47,16 +68,31 @@ export function ZoneRow({ timeZone, isHome, now, onRemove }: ZoneRowProps) {
             </span>
           )}
         </div>
-        <span className="text-muted-foreground text-sm">
-          {formatDate(now, timeZone)}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted-foreground text-sm">
+            {formatDate(displayDate, timeZone)}
+          </span>
+          {dayOffset !== 0 && (
+            <span className="text-xs text-yellow-400" data-testid="day-offset">
+              {dayLabel[dayOffset]}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="flex flex-col items-end gap-0.5">
-          <span className="font-mono text-xl text-foreground" data-testid="zone-time">
-            {formatTime(now, timeZone)}
-          </span>
+          <button
+            onClick={() => onPinClick?.(timeZone)}
+            className="font-mono text-xl text-foreground hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer"
+            data-testid="zone-time"
+            title="Click to pin this time"
+          >
+            {formatTime(displayDate, timeZone)}
+            {pinnedDate && (
+              <Pin className="w-3 h-3 text-primary" />
+            )}
+          </button>
           <span className={cn('text-xs', statusColors[status])}>
             {status}
           </span>

@@ -6,9 +6,19 @@ interface ZoneListProps {
   zones: string[]
   homeZone: string
   onRemove: (tz: string) => void
+  onPinClick?: (tz: string) => void
+  pinnedDate?: Date | null
+  sourceZone?: string | null
 }
 
-export function ZoneList({ zones, homeZone, onRemove }: ZoneListProps) {
+export function ZoneList({
+  zones,
+  homeZone,
+  onRemove,
+  onPinClick,
+  pinnedDate,
+  sourceZone,
+}: ZoneListProps) {
   const now = useClock()
 
   return (
@@ -27,6 +37,9 @@ export function ZoneList({ zones, homeZone, onRemove }: ZoneListProps) {
             isHome={tz === homeZone}
             now={now}
             onRemove={onRemove}
+            onPinClick={onPinClick}
+            pinnedDate={pinnedDate}
+            sourceZone={sourceZone}
           />
         ))}
       </div>

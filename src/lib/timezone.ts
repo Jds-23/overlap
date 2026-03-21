@@ -74,3 +74,89 @@ export function canAddZone(zones: string[]): boolean {
 export function isDuplicate(zones: string[], timeZone: string): boolean {
   return zones.includes(timeZone)
 }
+
+/**
+ * Given a time (hours, minutes) in sourceZone, create a Date representing
+ * that moment, then return the equivalent Date object.
+ */
+export function createPinnedDate(
+  hours: number,
+  minutes: number,
+  sourceZone: string,
+  referenceDate: Date = new Date(),
+): Date {
+  // Get the current date parts in the source timezone
+  const dateParts = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: sourceZone,
+  }).formatToParts(referenceDate)
+
+  const year = parseInt(dateParts.find((p) => p.type === 'year')!.value)
+  const month = parseInt(dateParts.find((p) => p.type === 'month')!.value)
+  const day = parseInt(dateParts.find((p) => p.type === 'day')!.value)
+
+  // Create an ISO string for the desired time in the source timezone
+  // We need to find the UTC offset for the source timezone at this date
+  const tempDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`)
+
+  // Get the offset by comparing formatter output to UTC
+  const utcStr = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false, timeZone: sourceZone,
+  }).format(tempDate)
+
+  // Parse what the formatter says the time is in sourceZone
+  const match = utcStr.match(/(\d+)\/(\d+)\/(\d+),\s*(\d+):(\d+):(\d+)/)
+  if (!match) return tempDate
+
+  const [, fMonth, fDay, fYear, fHour, fMin] = match.map(Number)
+
+  // Calculate the difference between what we want and what we got
+  const wantedMinutes = hours * 60 + minutes
+  const gotMinutes = fHour! * 60 + fMin!
+
+  // Adjust — also account for possible date difference
+  const wantedDate = new Date(year, month - 1, day)
+  const gotDate = new Date(fYear!, fMonth! - 1, fDay!)
+  const dayDiff = Math.round((wantedDate.getTime() - gotDate.getTime()) / 86400000)
+
+  const minuteDiff = wantedMinutes - gotMinutes + dayDiff * 1440
+  return new Date(tempDate.getTime() + minuteDiff * 60000)
+}
+
+/**
+ * Detect day boundary: returns +1, -1, or 0 comparing the date in targetZone
+ * to the date in sourceZone for the given moment.
+ */
+export function getDayOffset(
+  pinnedDate: Date,
+  sourceZone: string,
+  targetZone: string,
+): number {
+  const sourceDay = getDayOfYear(pinnedDate, sourceZone)
+  const targetDay = getDayOfYear(pinnedDate, targetZone)
+
+  if (targetDay > sourceDay) return 1
+  if (targetDay < sourceDay) return -1
+  return 0
+}
+
+function getDayOfYear(date: Date, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone,
+  }).formatToParts(date)
+
+  const year = parseInt(parts.find((p) => p.type === 'year')!.value)
+  const month = parseInt(parts.find((p) => p.type === 'month')!.value)
+  const day = parseInt(parts.find((p) => p.type === 'day')!.value)
+
+  const start = new Date(year, 0, 1)
+  const current = new Date(year, month - 1, day)
+  return Math.floor((current.getTime() - start.getTime()) / 86400000)
+}
