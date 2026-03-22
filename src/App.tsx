@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { ZoneList } from '@/components/zone-list'
 import { CommandPalette } from '@/components/command-palette'
@@ -7,6 +7,8 @@ import { TimePickerDialog } from '@/components/time-picker-dialog'
 import { DateNav } from '@/components/date-nav'
 import { OverlapPanel } from '@/components/overlap-panel'
 import { InstallBanner } from '@/components/install-banner'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import { useZones } from '@/hooks/use-zones'
 import { usePin } from '@/hooks/use-pin'
 import { useSelectedDate } from '@/hooks/use-selected-date'
@@ -23,6 +25,8 @@ function App() {
     goToDate,
   } = useSelectedDate()
   const [pickerZone, setPickerZone] = useState<string | null>(null)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const handlePaletteOpenChange = useCallback((open: boolean) => setPaletteOpen(open), [])
 
   const handlePinClick = (tz: string) => {
     setPickerZone(tz)
@@ -59,15 +63,23 @@ function App() {
           sourceZone={sourceZone}
           selectedDate={selectedDate}
         />
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-4"
+          onClick={() => setPaletteOpen(true)}
+          data-testid="add-zone-button"
+        >
+          <Plus className="w-4 h-4 mr-1" />
+          Add zone
+          <kbd className="ml-1 text-xs text-muted-foreground">⌘K</kbd>
+        </Button>
         <OverlapPanel
           zones={zones}
           homeZone={homeZone}
           date={selectedDate}
         />
-        <div className="mt-4 text-xs text-muted-foreground">
-          Press <kbd className="px-1.5 py-0.5 bg-secondary rounded text-foreground font-mono text-xs">⌘K</kbd> to add a zone
-        </div>
-        <CommandPalette onAdd={addZone} />
+        <CommandPalette onAdd={addZone} open={paletteOpen} onOpenChange={handlePaletteOpenChange} />
         <Toaster />
       <InstallBanner />
       </div>

@@ -14,28 +14,29 @@ import { getCityName, getUtcOffset } from '@/lib/timezone'
 
 interface CommandPaletteProps {
   onAdd: (tz: string) => { ok: boolean; error?: string }
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function CommandPalette({ onAdd }: CommandPaletteProps) {
-  const [open, setOpen] = useState(false)
+export function CommandPalette({ onAdd, open, onOpenChange }: CommandPaletteProps) {
   const [query, setQuery] = useState('')
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setOpen((prev) => !prev)
+        onOpenChange(!open)
       }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [])
+  }, [open, onOpenChange])
 
   const handleSelect = useCallback(
     (tz: string) => {
       const result = onAdd(tz)
       if (result.ok) {
-        setOpen(false)
+        onOpenChange(false)
         setQuery('')
       } else if (result.error) {
         toast.error(result.error)
@@ -49,7 +50,7 @@ export function CommandPalette({ onAdd }: CommandPaletteProps) {
   return (
     <CommandDialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       title="Add Time Zone"
       description="Search for a city or timezone abbreviation"
     >
