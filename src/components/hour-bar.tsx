@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useWebHaptics } from 'web-haptics/react'
 import { getHourInZone } from '@/lib/timezone'
 
 interface HourBarProps {
@@ -15,6 +16,7 @@ const CELL_WIDTH = 40
 const SCROLL_STEP = CELL_WIDTH * 4
 
 export function HourBar({ timeZone, now, onPin, onClearPin, pinnedDate }: HourBarProps) {
+  const { trigger } = useWebHaptics()
   const currentHour = getHourInZone(timeZone, now)
   const pinnedHour = pinnedDate ? getHourInZone(timeZone, pinnedDate) : null
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -83,7 +85,7 @@ export function HourBar({ timeZone, now, onPin, onClearPin, pinnedDate }: HourBa
           return (
             <button
               key={h}
-              onClick={() => isPinned ? onClearPin() : onPin(h, 0, timeZone)}
+              onClick={() => { trigger(isPinned ? 'nudge' : 'success'); isPinned ? onClearPin() : onPin(h, 0, timeZone) }}
               className={`flex-shrink-0 text-center text-xs font-mono rounded-sm
                 min-w-[40px] h-10 flex items-center justify-center
                 transition-colors cursor-pointer

@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect, useState } from 'react'
+import { useWebHaptics } from 'web-haptics/react'
 import { Pin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -105,6 +106,7 @@ export function TimePickerPopover({
   isPinned,
   onPin,
 }: TimePickerPopoverProps) {
+  const { trigger } = useWebHaptics()
   const [open, setOpen] = useState(false)
   const [hour, setHour] = useState(() => getHourInZone(timeZone))
   const [minute, setMinute] = useState(() => getMinuteInZone(timeZone))
@@ -121,17 +123,19 @@ export function TimePickerPopover({
   const handleHourChange = useCallback(
     (h: number) => {
       setHour(h)
+      trigger(20)
       onPin(h, minute, timeZone)
     },
-    [minute, timeZone, onPin],
+    [minute, timeZone, onPin, trigger],
   )
 
   const handleMinuteChange = useCallback(
     (m: number) => {
       setMinute(m)
+      trigger(10)
       onPin(hour, m, timeZone)
     },
-    [hour, timeZone, onPin],
+    [hour, timeZone, onPin, trigger],
   )
 
   return (

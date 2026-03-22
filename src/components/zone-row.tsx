@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { useWebHaptics } from 'web-haptics/react'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -49,6 +50,7 @@ export function ZoneRow({
   selectedDate,
   onDateSelect,
 }: ZoneRowProps) {
+  const { trigger } = useWebHaptics()
   const displayDate = pinnedDate ?? now
   const status = getZoneStatus(timeZone, displayDate)
   const dayOffset = pinnedDate && sourceZone
@@ -117,7 +119,7 @@ export function ZoneRow({
           </span>
         </div>
         <button
-          onClick={() => onRemove(timeZone)}
+          onClick={() => { trigger('error'); onRemove(timeZone) }}
           className="p-0.5 rounded text-muted-foreground/40 hover:text-foreground hover:bg-secondary transition-colors"
           aria-label={`Remove ${getCityName(timeZone)}`}
           data-testid="remove-zone"

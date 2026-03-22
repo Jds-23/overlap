@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useWebHaptics } from 'web-haptics/react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -25,12 +26,13 @@ export function DateNav({
   onToday,
   onDateSelect,
 }: DateNavProps) {
+  const { trigger } = useWebHaptics()
   return (
     <div className="flex items-center gap-2" data-testid="date-nav">
       <Button
         variant="ghost"
         size="icon"
-        onClick={onPrevDay}
+        onClick={() => { trigger('nudge'); onPrevDay() }}
         aria-label="Previous day"
         data-testid="prev-day"
         className="h-8 w-8"
@@ -59,7 +61,7 @@ export function DateNav({
       <Button
         variant="ghost"
         size="icon"
-        onClick={onNextDay}
+        onClick={() => { trigger('nudge'); onNextDay() }}
         aria-label="Next day"
         data-testid="next-day"
         className="h-8 w-8"
@@ -71,7 +73,7 @@ export function DateNav({
         <Button
           variant="outline"
           size="sm"
-          onClick={onToday}
+          onClick={() => { trigger('success'); onToday() }}
           data-testid="back-to-today"
           className="ml-2 text-xs h-7"
         >

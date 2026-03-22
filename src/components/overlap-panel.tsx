@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useWebHaptics } from 'web-haptics/react'
 import { getCityName } from '@/lib/timezone'
 import {
   calculateOverlap,
@@ -14,6 +15,7 @@ interface OverlapPanelProps {
 }
 
 export function OverlapPanel({ zones, homeZone, date }: OverlapPanelProps) {
+  const { trigger } = useWebHaptics()
   const [selectedZones, setSelectedZones] = useState<Set<string>>(
     () => new Set(zones),
   )
@@ -61,7 +63,7 @@ export function OverlapPanel({ zones, homeZone, date }: OverlapPanelProps) {
               <input
                 type="checkbox"
                 checked={activeSelected.has(tz)}
-                onChange={() => toggleZone(tz)}
+                onChange={() => { trigger('nudge'); toggleZone(tz) }}
                 className="accent-primary"
                 data-testid={`checkbox-${tz}`}
               />
