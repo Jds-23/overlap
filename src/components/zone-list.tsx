@@ -48,7 +48,13 @@ export function ZoneList({
               selectedDate={selectedDate}
               onDateSelect={onDateSelect}
             />
-            <HourBar timeZone={tz} now={now} />
+            <HourBar
+              timeZone={tz}
+              now={now}
+              onPin={onPin}
+              pinnedDate={pinnedDate}
+              sourceZone={sourceZone}
+            />
           </div>
         ))}
       </div>
