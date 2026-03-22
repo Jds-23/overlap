@@ -8,6 +8,7 @@ interface ZoneListProps {
   homeZone: string
   onRemove: (tz: string) => void
   onPin: (hours: number, minutes: number, sourceZone: string) => void
+  onClearPin: () => void
   pinnedDate?: Date | null
   sourceZone?: string | null
   selectedDate?: Date
@@ -19,6 +20,7 @@ export function ZoneList({
   homeZone,
   onRemove,
   onPin,
+  onClearPin,
   pinnedDate,
   sourceZone,
   selectedDate,
@@ -52,6 +54,7 @@ export function ZoneList({
               timeZone={tz}
               now={now}
               onPin={onPin}
+              onClearPin={onClearPin}
               pinnedDate={pinnedDate}
               sourceZone={sourceZone}
             />
