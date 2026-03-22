@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect, useState } from 'react'
+import { Calligraph } from 'calligraph'
 import { Pin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -141,7 +142,7 @@ export function TimePickerPopover({
         data-testid="zone-time"
         title="Click to pin this time"
       >
-        {formatTime(displayDate, timeZone)}
+        <Calligraph>{formatTime(displayDate, timeZone)}</Calligraph>
         {isPinned && <Pin className="w-3 h-3 text-primary" />}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-3" align="end">
