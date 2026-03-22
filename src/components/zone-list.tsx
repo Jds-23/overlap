@@ -1,4 +1,5 @@
 import { ZoneRow } from './zone-row'
+import { HourBar } from './hour-bar'
 import { useClock } from '@/hooks/use-clock'
 import { canAddZone } from '@/lib/timezone'
 
@@ -7,6 +8,7 @@ interface ZoneListProps {
   homeZone: string
   onRemove: (tz: string) => void
   onPin: (hours: number, minutes: number, sourceZone: string) => void
+  onClearPin: () => void
   pinnedDate?: Date | null
   sourceZone?: string | null
   selectedDate?: Date
@@ -18,6 +20,7 @@ export function ZoneList({
   homeZone,
   onRemove,
   onPin,
+  onClearPin,
   pinnedDate,
   sourceZone,
   selectedDate,
@@ -35,18 +38,27 @@ export function ZoneList({
       </div>
       <div className="border-t border-border" data-testid="zone-list">
         {zones.map((tz) => (
-          <ZoneRow
-            key={tz}
-            timeZone={tz}
-            isHome={tz === homeZone}
-            now={now}
-            onRemove={onRemove}
-            onPin={onPin}
-            pinnedDate={pinnedDate}
-            sourceZone={sourceZone}
-            selectedDate={selectedDate}
-            onDateSelect={onDateSelect}
-          />
+          <div key={tz}>
+            <ZoneRow
+              timeZone={tz}
+              isHome={tz === homeZone}
+              now={now}
+              onRemove={onRemove}
+              onPin={onPin}
+              pinnedDate={pinnedDate}
+              sourceZone={sourceZone}
+              selectedDate={selectedDate}
+              onDateSelect={onDateSelect}
+            />
+            <HourBar
+              timeZone={tz}
+              now={now}
+              onPin={onPin}
+              onClearPin={onClearPin}
+              pinnedDate={pinnedDate}
+              sourceZone={sourceZone}
+            />
+          </div>
         ))}
       </div>
     </div>

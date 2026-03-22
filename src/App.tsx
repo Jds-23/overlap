@@ -53,6 +53,7 @@ function App() {
           homeZone={homeZone}
           onRemove={removeZone}
           onPin={pinTime}
+          onClearPin={clearPin}
           pinnedDate={pinnedDate}
           sourceZone={sourceZone}
           selectedDate={selectedDate}
