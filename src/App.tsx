@@ -62,6 +62,7 @@ function App() {
           pinnedDate={pinnedDate}
           sourceZone={sourceZone}
           selectedDate={selectedDate}
+          onDateSelect={goToDate}
         />
         <Button
           variant="outline"

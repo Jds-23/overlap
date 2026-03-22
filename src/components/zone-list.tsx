@@ -10,6 +10,7 @@ interface ZoneListProps {
   pinnedDate?: Date | null
   sourceZone?: string | null
   selectedDate?: Date
+  onDateSelect?: (date: Date) => void
 }
 
 export function ZoneList({
@@ -20,6 +21,7 @@ export function ZoneList({
   pinnedDate,
   sourceZone,
   selectedDate,
+  onDateSelect,
 }: ZoneListProps) {
   const now = useClock(selectedDate)
 
@@ -42,6 +44,8 @@ export function ZoneList({
             onPinClick={onPinClick}
             pinnedDate={pinnedDate}
             sourceZone={sourceZone}
+            selectedDate={selectedDate}
+            onDateSelect={onDateSelect}
           />
         ))}
       </div>
