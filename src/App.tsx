@@ -63,11 +63,6 @@ function App() {
           sourceZone={sourceZone}
           selectedDate={selectedDate}
         />
-        <OverlapPanel
-          zones={zones}
-          homeZone={homeZone}
-          date={selectedDate}
-        />
         <Button
           variant="outline"
           size="sm"
@@ -77,7 +72,13 @@ function App() {
         >
           <Plus className="w-4 h-4 mr-1" />
           Add zone
+          <kbd className="ml-1 text-xs text-muted-foreground">⌘K</kbd>
         </Button>
+        <OverlapPanel
+          zones={zones}
+          homeZone={homeZone}
+          date={selectedDate}
+        />
         <CommandPalette onAdd={addZone} open={paletteOpen} onOpenChange={handlePaletteOpenChange} />
         <Toaster />
       <InstallBanner />
