@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { AnimatePresence } from 'motion/react'
 import { Toaster } from '@/components/ui/sonner'
 import { ZoneList } from '@/components/zone-list'
 import { CommandPalette } from '@/components/command-palette'
@@ -28,14 +29,16 @@ function App() {
 
   return (
     <div className={isPinned ? 'pt-12' : ''}>
-      {isPinned && pinnedDate && sourceZone && (
-        <PinBanner
-          pinnedDate={pinnedDate}
-          sourceZone={sourceZone}
-          zones={zones}
-          onClear={clearPin}
-        />
-      )}
+      <AnimatePresence>
+        {isPinned && pinnedDate && sourceZone && (
+          <PinBanner
+            pinnedDate={pinnedDate}
+            sourceZone={sourceZone}
+            zones={zones}
+            onClear={clearPin}
+          />
+        )}
+      </AnimatePresence>
       <div className="min-h-screen flex flex-col items-center pt-12">
         <h1 className="text-4xl font-bold text-primary mb-4">Overlap</h1>
         <div className="mb-6">

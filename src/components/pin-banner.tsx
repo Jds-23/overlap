@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import { X } from 'lucide-react'
 import { formatTime, getCityName, getDayOffset } from '@/lib/timezone'
 
@@ -15,7 +16,11 @@ const dayLabel: Record<number, string> = {
 
 export function PinBanner({ pinnedDate, sourceZone, zones, onClear }: PinBannerProps) {
   return (
-    <div
+    <motion.div
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -60, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur border-b border-border"
       data-testid="pin-banner"
     >
@@ -54,6 +59,6 @@ export function PinBanner({ pinnedDate, sourceZone, zones, onClear }: PinBannerP
           <X className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

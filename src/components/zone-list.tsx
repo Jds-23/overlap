@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'motion/react'
 import { ZoneRow } from './zone-row'
 import { useClock } from '@/hooks/use-clock'
 import { canAddZone } from '@/lib/timezone'
@@ -34,20 +35,29 @@ export function ZoneList({
         )}
       </div>
       <div className="border-t border-border" data-testid="zone-list">
-        {zones.map((tz) => (
-          <ZoneRow
-            key={tz}
-            timeZone={tz}
-            isHome={tz === homeZone}
-            now={now}
-            onRemove={onRemove}
-            onPin={onPin}
-            pinnedDate={pinnedDate}
-            sourceZone={sourceZone}
-            selectedDate={selectedDate}
-            onDateSelect={onDateSelect}
-          />
-        ))}
+        <AnimatePresence initial={false}>
+          {zones.map((tz) => (
+            <motion.div
+              key={tz}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0, transition: { duration: 0.2 } }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.8 }}
+            >
+              <ZoneRow
+                timeZone={tz}
+                isHome={tz === homeZone}
+                now={now}
+                onRemove={onRemove}
+                onPin={onPin}
+                pinnedDate={pinnedDate}
+                sourceZone={sourceZone}
+                selectedDate={selectedDate}
+                onDateSelect={onDateSelect}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   )

@@ -1,4 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
+import confetti from 'canvas-confetti'
 import { getCityName } from '@/lib/timezone'
 import {
   calculateOverlap,
@@ -12,6 +14,12 @@ interface OverlapPanelProps {
   homeZone: string
   date: Date
 }
+
+const noOverlapMessages = [
+  'Ships passing in the night...',
+  'Different hours, same planet.',
+  'Time zones said no today.',
+]
 
 export function OverlapPanel({ zones, homeZone, date }: OverlapPanelProps) {
   const [selectedZones, setSelectedZones] = useState<Set<string>>(
@@ -37,6 +45,28 @@ export function OverlapPanel({ zones, homeZone, date }: OverlapPanelProps) {
   const overlap = useMemo(
     () => calculateOverlap(selectedArray, date),
     [selectedArray.join(','), date],
+  )
+
+  // Confetti on large overlap (8+ hours = perfect overlap)
+  const prevOverlapRef = useRef(0)
+  useEffect(() => {
+    if (overlap.hasOverlap && overlap.totalMinutes >= 480 && prevOverlapRef.current < 480) {
+      confetti({
+        particleCount: 60,
+        spread: 50,
+        origin: { y: 0.7 },
+        colors: ['#5b5ef4', '#22c55e', '#eab308'],
+        gravity: 1.2,
+        ticks: 150,
+      })
+    }
+    prevOverlapRef.current = overlap.totalMinutes
+  }, [overlap.hasOverlap, overlap.totalMinutes])
+
+  // Pick a stable random "no overlap" message per date
+  const noOverlapMsg = useMemo(
+    () => noOverlapMessages[Math.abs(date.getDate()) % noOverlapMessages.length],
+    [date],
   )
 
   // Check if any selected zone is on a weekend
@@ -87,33 +117,45 @@ export function OverlapPanel({ zones, homeZone, date }: OverlapPanelProps) {
         ) : overlap.hasOverlap ? (
           <div data-testid="overlap-result">
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-2xl font-bold text-green-400 font-mono" data-testid="overlap-duration">
+              <motion.span
+                key={overlap.totalMinutes}
+                initial={{ scale: 1.3, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="text-2xl font-bold text-green-400 font-mono"
+                data-testid="overlap-duration"
+              >
                 {formatDuration(overlap.totalMinutes)}
-              </span>
+              </motion.span>
               <span className="text-sm text-muted-foreground">overlap</span>
             </div>
-            {overlap.windows.map((w, i) => (
-              <div
-                key={i}
-                className="border border-border rounded-lg p-3 mb-2"
-                data-testid="overlap-window"
-              >
-                {selectedArray.map((tz) => (
-                  <div key={tz} className="flex justify-between text-sm py-0.5">
-                    <span className={tz === homeZone ? 'text-primary' : 'text-muted-foreground'}>
-                      {getCityName(tz)}
-                    </span>
-                    <span className="font-mono text-foreground">
-                      {formatOverlapWindow(w, tz, date)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ))}
+            <AnimatePresence mode="wait">
+              {overlap.windows.map((w, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.25 }}
+                  className="border border-border rounded-lg p-3 mb-2"
+                  data-testid="overlap-window"
+                >
+                  {selectedArray.map((tz) => (
+                    <div key={tz} className="flex justify-between text-sm py-0.5">
+                      <span className={tz === homeZone ? 'text-primary' : 'text-muted-foreground'}>
+                        {getCityName(tz)}
+                      </span>
+                      <span className="font-mono text-foreground">
+                        {formatOverlapWindow(w, tz, date)}
+                      </span>
+                    </div>
+                  ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         ) : (
           <div data-testid="no-overlap">
-            <p className="text-sm text-red-400 mb-1">No overlap found</p>
+            <p className="text-sm text-red-400 mb-1">{noOverlapMsg}</p>
             {overlap.nearestGapMinutes !== undefined && overlap.nearestGapMinutes > 0 && (
               <p className="text-sm text-muted-foreground" data-testid="nearest-gap">
                 Nearest overlap is {formatDuration(overlap.nearestGapMinutes)} away

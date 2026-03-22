@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect, useState } from 'react'
+import { motion, useSpring, useMotionValue } from 'motion/react'
 import { Pin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -39,6 +40,14 @@ function ScrollWheel({
   const itemHeight = 32
   const isScrolling = useRef(false)
 
+  // Spring-animated highlight position
+  const highlightY = useMotionValue(value * itemHeight)
+  const springY = useSpring(highlightY, { stiffness: 600, damping: 30 })
+
+  useEffect(() => {
+    highlightY.set(value * itemHeight)
+  }, [value, highlightY])
+
   useEffect(() => {
     const el = containerRef.current
     if (!el || isScrolling.current) return
@@ -69,15 +78,20 @@ function ScrollWheel({
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="h-[96px] w-[52px] overflow-y-auto snap-y snap-mandatory scrollbar-hide rounded-md bg-secondary/50"
+        className="h-[96px] w-[52px] overflow-y-auto snap-y snap-mandatory scrollbar-hide rounded-md bg-secondary/50 relative"
         style={{ scrollbarWidth: 'none' }}
       >
+        {/* Spring-animated selection highlight */}
+        <motion.div
+          className="absolute left-0.5 right-0.5 h-8 rounded-sm bg-primary/10 pointer-events-none z-0"
+          style={{ top: springY, marginTop: itemHeight }}
+        />
         <div style={{ height: itemHeight }} />
         {items.map((i) => (
           <button
             key={i}
             className={cn(
-              'w-full h-8 flex items-center justify-center font-mono text-sm snap-center transition-colors cursor-pointer',
+              'relative z-10 w-full h-8 flex items-center justify-center font-mono text-sm snap-center transition-colors cursor-pointer',
               i === value
                 ? 'text-primary font-bold text-base'
                 : 'text-muted-foreground hover:text-foreground',

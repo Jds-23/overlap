@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -112,9 +113,18 @@ export function ZoneRow({
             isPinned={!!pinnedDate}
             onPin={onPin}
           />
-          <span className={cn('text-xs', statusColors[status])}>
-            {status}
-          </span>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={status}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className={cn('text-xs', statusColors[status])}
+            >
+              {status}
+            </motion.span>
+          </AnimatePresence>
         </div>
         <button
           onClick={() => onRemove(timeZone)}
