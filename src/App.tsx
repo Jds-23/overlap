@@ -3,7 +3,6 @@ import { Toaster } from '@/components/ui/sonner'
 import { ZoneList } from '@/components/zone-list'
 import { CommandPalette } from '@/components/command-palette'
 import { PinBanner } from '@/components/pin-banner'
-import { TimePickerDialog } from '@/components/time-picker-dialog'
 import { DateNav } from '@/components/date-nav'
 import { OverlapPanel } from '@/components/overlap-panel'
 import { InstallBanner } from '@/components/install-banner'
@@ -24,13 +23,8 @@ function App() {
     goToToday,
     goToDate,
   } = useSelectedDate()
-  const [pickerZone, setPickerZone] = useState<string | null>(null)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const handlePaletteOpenChange = useCallback((open: boolean) => setPaletteOpen(open), [])
-
-  const handlePinClick = (tz: string) => {
-    setPickerZone(tz)
-  }
 
   return (
     <div className={isPinned ? 'pt-12' : ''}>
@@ -58,7 +52,7 @@ function App() {
           zones={zones}
           homeZone={homeZone}
           onRemove={removeZone}
-          onPinClick={handlePinClick}
+          onPin={pinTime}
           pinnedDate={pinnedDate}
           sourceZone={sourceZone}
           selectedDate={selectedDate}
@@ -84,14 +78,6 @@ function App() {
         <Toaster />
       <InstallBanner />
       </div>
-      {pickerZone && (
-        <TimePickerDialog
-          open={!!pickerZone}
-          onOpenChange={(open) => !open && setPickerZone(null)}
-          timeZone={pickerZone}
-          onPin={pinTime}
-        />
-      )}
     </div>
   )
 }

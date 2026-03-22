@@ -1,4 +1,4 @@
-import { X, Pin } from 'lucide-react'
+import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -6,8 +6,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover'
+import { TimePickerPopover } from '@/components/time-picker-popover'
 import {
-  formatTime,
   formatDate,
   getUtcOffset,
   getCityName,
@@ -20,7 +20,7 @@ interface ZoneRowProps {
   isHome: boolean
   now: Date
   onRemove: (tz: string) => void
-  onPinClick?: (tz: string) => void
+  onPin: (hours: number, minutes: number, sourceZone: string) => void
   pinnedDate?: Date | null
   sourceZone?: string | null
   selectedDate?: Date
@@ -43,7 +43,7 @@ export function ZoneRow({
   isHome,
   now,
   onRemove,
-  onPinClick,
+  onPin,
   pinnedDate,
   sourceZone,
   selectedDate,
@@ -106,17 +106,12 @@ export function ZoneRow({
 
       <div className="flex items-center gap-2">
         <div className="flex flex-col items-end gap-0.5">
-          <button
-            onClick={() => onPinClick?.(timeZone)}
-            className="font-mono text-xl text-foreground hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer"
-            data-testid="zone-time"
-            title="Click to pin this time"
-          >
-            {formatTime(displayDate, timeZone)}
-            {pinnedDate && (
-              <Pin className="w-3 h-3 text-primary" />
-            )}
-          </button>
+          <TimePickerPopover
+            timeZone={timeZone}
+            displayDate={displayDate}
+            isPinned={!!pinnedDate}
+            onPin={onPin}
+          />
           <span className={cn('text-xs', statusColors[status])}>
             {status}
           </span>
