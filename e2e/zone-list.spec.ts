@@ -25,13 +25,12 @@ test('add a zone via Cmd+K → appears in list', async ({ page }) => {
   await expect(page.locator('[data-timezone="Asia/Tokyo"]')).toBeVisible()
 })
 
-test('remove a zone (hover ×) → disappears from list', async ({ page }) => {
+test('remove a zone (click ×) → disappears from list', async ({ page }) => {
   await page.goto('/')
   const initialCount = await page.locator('[data-testid="zone-row"]').count()
   expect(initialCount).toBeGreaterThanOrEqual(2)
 
   const lastRow = page.locator('[data-testid="zone-row"]').last()
-  await lastRow.hover()
   await lastRow.locator('[data-testid="remove-zone"]').click()
 
   await expect(page.locator('[data-testid="zone-row"]')).toHaveCount(initialCount - 1)

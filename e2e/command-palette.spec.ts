@@ -15,6 +15,7 @@ test('Cmd+K opens the command palette', async ({ page }) => {
 test('typing a search term filters results', async ({ page }) => {
   await page.goto('/')
   await page.keyboard.press('Meta+k')
+  await expect(page.locator('[data-testid="command-input"]')).toBeVisible()
   await page.locator('[data-testid="command-input"]').fill('Tokyo')
   const results = page.locator('[data-testid="command-result"]')
   await expect(results.first()).toBeVisible()

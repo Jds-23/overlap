@@ -80,7 +80,7 @@ export function ZoneRow({
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <div className="flex flex-col items-end gap-0.5">
           <button
             onClick={() => onPinClick?.(timeZone)}
@@ -99,11 +99,11 @@ export function ZoneRow({
         </div>
         <button
           onClick={() => onRemove(timeZone)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground"
+          className="p-0.5 rounded text-muted-foreground/40 hover:text-foreground hover:bg-secondary transition-colors"
           aria-label={`Remove ${getCityName(timeZone)}`}
           data-testid="remove-zone"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
